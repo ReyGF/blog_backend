@@ -1,3 +1,6 @@
+# base de datos local
+/data
+
 # compiled output
 /dist
 /node_modules
