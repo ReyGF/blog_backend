@@ -81,20 +81,27 @@ Nest is [MIT licensed](LICENSE).
 
 1. **Dependencias**: Tener instalado docker y docker-compose.
 
-2. **Variables de entorno**: Crear un fichero `.env` donde se define la variable `POSTGRES_PASSWORD`, que es la contraseña de la base de datos. La variable `POSTGRES_PORT` es la puerto de la base de datos. Por defecto es `5432`. La variable `ADMINER_PORT` es el puerto del administrador de base de datos. Por defecto es `8080`. Hay un ejemplo en el `.env.template`.
+2. **Variables de entorno**: 
+   - Crear un fichero `.env` donde se defina la variable `POSTGRES_PASSWORD`, que será la contraseña de la base de datos.
+   - La variable `POSTGRES_PORT` es el puerto de la base de datos. Por defecto es `5432`.
+   - La variable `ADMINER_PORT` es el puerto del administrador de base de datos. Por defecto es `8080`.
+   - Hay un ejemplo en el `.env.template`.
 
 3. **Comando para levantar la base de datos**: `docker-compose up -d`
-   - Ahora puedes conectarte a la base de datos desde tu propio administrador o usar el que he puesto en el docker-compose, `adminer`. Para entrar en el debes escribir `http://localhost:8080` (o el puesto que hayas especificado en el `.env` que por defecto es `8080`).
+   - Ahora puedes conectarte a la base de datos desde tu propio administrador o usar el que he puesto en el docker-compose, `adminer`. Para entrar en él debes escribir `http://localhost:8080` (o el puerto que hayas especificado en el `.env` que por defecto es `8080`).
+   - Cuando abras el enlace, para conectarte a la base de datos deberás llenar los datos de la siguiente manera:
   
   |                        |            |
   | ---------------------- | ---------- |
   | Motor de base de datos | PostgreSQL |
   | Servidor               | db         |
-  | Usuario                | root       |
+  | Usuario                | postgres   |
   | Contraseña             | password   | *o la que hayas especificado en el `.env`* |
   | Base de datos          |            |
-1. **Poblar la base de datos**: Para crear y poblar la base de datos se puede copiar los `SQL` de [crear base de datos](#crear-base-de-datos) y [poblar la base de datos](#poblar-con-datos-fake-para-pruebas).
-2. **Comando para detener la base de datos**: `docker-compose down -v`
+
+4. **Poblar la base de datos**: Para crear y poblar la base de datos se puede copiar los `SQL` de [crear base de datos](#crear-base-de-datos) y [poblar la base de datos](#poblar-con-datos-fake-para-pruebas).
+   
+5. **Comando para detener la base de datos**: `docker-compose down -v`
 
 ## Entidades
 
