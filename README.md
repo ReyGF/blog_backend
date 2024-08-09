@@ -169,13 +169,16 @@ Aquí me surgió una duda sobre roles. ¿[Consideras que es mejor usar los roles
 
 ## Crear base de datos
 
-### Crear las tablas
-
 ```sql
 
 -- Crear la base de datos
 CREATE DATABASE blog_app;
-\c blog_app;
+
+```
+
+### Crear las tablas
+
+```sql
 
 -- Para que funcione la función gen_random_uuid()
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -190,7 +193,7 @@ CREATE TABLE Users (
     avatar VARCHAR(255),
     createdAt TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-    isDeleted BOOLEAN DEFAULT false,
+    isDeleted BOOLEAN DEFAULT false
 );
 
 -- Tabla Roles
