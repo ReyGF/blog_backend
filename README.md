@@ -230,6 +230,8 @@ CREATE TABLE Comments (
     FOREIGN KEY (postId) REFERENCES Posts(id) ON DELETE CASCADE
 );
 
+CREATE INDEX idx_comments_postId ON Comments(postId);
+
 ```
 ### Poblar con datos fake para pruebas
 
