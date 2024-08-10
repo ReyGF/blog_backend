@@ -121,11 +121,11 @@ Nest is [MIT licensed](LICENSE).
 
 ### Roles
 
-| id  | role   | description             |
-| --- | ------ | ----------------------- |
-| 1   | ADMIN  | crear y editar usuarios |
-| 2   | EDITOR | crear y editar posts    |
-| 3   | READER | Leer y comentar         |
+| id  | role   | description                                         |
+| --- | ------ | --------------------------------------------------- |
+| 1   | ADMIN  | Crear y editar usuarios, más los permisos de EDITOR |
+| 2   | EDITOR | Crear y editar posts, más los permisos de READER    |
+| 3   | READER | Leer y comentar                                     |
 
 ### Posts
 
