@@ -107,19 +107,17 @@ Nest is [MIT licensed](LICENSE).
 
 ### Users
 
-| Field                               | Type            | Required | Key | Default           | Extra       |
-| ----------------------------------- | --------------- | -------- | --- | ----------------- | ----------- |
-| id                                  | UUID            | YES      | PRI |                   |             |
-| email                               | VARCHAR(255)    | YES      |     |                   | UNIQUE      |
-| name                                | VARCHAR(60)     | YES      |     |                   |             |
-| password                            | VARCHAR(255)    | YES      |     |                   |             |
-| avatar                              | VARCHAR(255)    | NO       |     | NULL              |             |
-| createdAt                           | TIMESTAMPTZ     | NO       |     | CURRENT_TIMESTAMP |             |
-| updatedAt                           | TIMESTAMPTZ     | NO       |     | CURRENT_TIMESTAMP |             |
-| isDeleted                           | BOOLEAN         | NO       |     | false             |             |
-| ==<span id="item1">roles¿?</span>== | VARCHAR(20)[]¿? | NO¿?     | ¿?  | ['READER_ID']¿?   | Role's id¿? |
-
-Aquí me surgió una duda sobre roles. ¿[Consideras que es mejor usar los roles de usuario como un arrar en la tabla de usuario](#item1) o [crear una nueva tabla de roles-usuario que relacione los roles con los usuarios](#userroles)?
+| Field     | Type         | Required | Key     | Default           | Extra     |
+| --------- | ------------ | -------- | ------- | ----------------- | --------- |
+| id        | UUID         | YES      | PRI     |                   |           |
+| email     | VARCHAR(255) | YES      |         |                   | UNIQUE    |
+| name      | VARCHAR(60)  | YES      |         |                   |           |
+| password  | VARCHAR(255) | YES      |         |                   |           |
+| avatar    | VARCHAR(255) | NO       |         | NULL              |           |
+| createdAt | TIMESTAMPTZ  | NO       |         | CURRENT_TIMESTAMP |           |
+| updatedAt | TIMESTAMPTZ  | NO       |         | CURRENT_TIMESTAMP |           |
+| isDeleted | BOOLEAN      | NO       |         | false             |           |
+| rolId     | INTEGER      | NO       | FOREIGN | 3                 | Role's id |
 
 ### Roles
 
@@ -128,15 +126,6 @@ Aquí me surgió una duda sobre roles. ¿[Consideras que es mejor usar los roles
 | 1   | ADMIN  | crear y editar usuarios |
 | 2   | EDITOR | crear y editar posts    |
 | 3   | READER | Leer y comentar         |
-
-### UserRoles
-
-| Field     | Type    | Required | Key | Default | Extra     |
-| --------- | ------- | -------- | --- | ------- | --------- |
-| userId    | UUID    | YES      | PRI |         | User's id |
-| roleId    | INTEGER | YES      | YES | PRI     | Role's id |
-| isDeleted | BOOLEAN | NO       |     | false   |           |
-
 
 ### Posts
 
@@ -183,6 +172,18 @@ CREATE DATABASE blog_app;
 -- Para que funcione la función gen_random_uuid()
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
+-- Tabla Roles
+CREATE TABLE Roles (
+    id SERIAL PRIMARY KEY,
+    role VARCHAR(20) NOT NULL UNIQUE,
+    description TEXT
+);
+
+-- Insertar roles
+INSERT INTO Roles (role, description) VALUES 
+    ('ADMIN', 'Crear y editar usuarios, más los permisos de EDITOR'),
+    ('EDITOR', 'Crear y editar posts, más los permisos de READER'),
+    ('READER', 'Leer y comentar ');
 
 -- Tabla Users
 CREATE TABLE Users (
@@ -193,34 +194,15 @@ CREATE TABLE Users (
     avatar VARCHAR(255),
     createdAt TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-    isDeleted BOOLEAN DEFAULT false
-);
-
--- Tabla Roles
-CREATE TABLE Roles (
-    id SERIAL PRIMARY KEY,
-    role VARCHAR(20) NOT NULL UNIQUE,
-    description TEXT
-);
-
--- Insertar roles
-INSERT INTO Roles (role, description) VALUES 
-    ('ADMIN', 'crear y editar usuarios'),
-    ('EDITOR', 'crear y editar posts'),
-    ('READER', 'Leer y comentar ');
-
--- Tabla UserRoles
-CREATE TABLE UserRoles (
-    userId UUID REFERENCES Users(id) ON DELETE CASCADE,
-    roleId INTEGER REFERENCES Roles(id) ON DELETE CASCADE,
     isDeleted BOOLEAN DEFAULT false,
-    PRIMARY KEY (userId, roleId)
+    rolId INTEGER NOT NULL DEFAULT 3,
+    FOREIGN KEY (rolId) REFERENCES Roles(id)
 );
 
 -- Tabla Posts
 CREATE TABLE Posts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    userId UUID REFERENCES Users(id) ON DELETE CASCADE,
+    userId UUID NOT NULL,
     title VARCHAR(255) NOT NULL,
     content TEXT NOT NULL,
     description TEXT,
@@ -230,18 +212,22 @@ CREATE TABLE Posts (
     slug VARCHAR(255) UNIQUE,
     createdAt TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-    isDeleted BOOLEAN DEFAULT false
+    isDeleted BOOLEAN DEFAULT false,
+    FOREIGN KEY (userId) REFERENCES Users(id) ON DELETE CASCADE
 );
+
 
 -- Tabla Comments
 CREATE TABLE Comments (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    userId UUID REFERENCES Users(id) ON DELETE CASCADE,
-    postId UUID REFERENCES Posts(id) ON DELETE CASCADE,
+    userId UUID NOT NULL,
+    postId UUID NOT NULL,
     content TEXT NOT NULL,
     createdAt TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-    isDeleted BOOLEAN DEFAULT false
+    isDeleted BOOLEAN DEFAULT false,
+    FOREIGN KEY (userId) REFERENCES Users(id) ON DELETE CASCADE,
+    FOREIGN KEY (postId) REFERENCES Posts(id) ON DELETE CASCADE
 );
 
 ```
@@ -249,50 +235,27 @@ CREATE TABLE Comments (
 
 ```sql
 
--- Insertar datos en Users
-INSERT INTO Users (email, name, password, avatar) VALUES
-    ('alice@example.com', 'Alice Johnson', 'password123', 'https://example.com/avatar/alice.jpg'),
-    ('bob@example.com', 'Bob Smith', 'password123', 'https://example.com/avatar/bob.jpg'),
-    ('carol@example.com', 'Carol White', 'password123', 'https://example.com/avatar/carol.jpg'),
-    ('dave@example.com', 'Dave Clark', 'password123', 'https://example.com/avatar/dave.jpg'),
-    ('eve@example.com', 'Eve Johnson', 'password123', 'https://example.com/avatar/eve.jpg'),
-    ('fred@example.com', 'Fred Smith', 'password123', 'https://example.com/avatar/fred.jpg'),
-    ('george@example.com', 'George White', 'password123', 'https://example.com/avatar/george.jpg'),
-    ('harry@example.com', 'Harry Clark', 'password123', 'https://example.com/avatar/harry.jpg'),
-    ('isabel@example.com', 'Isabel White', 'password123', 'https://example.com/avatar/isabel.jpg'),
-    ('james@example.com', 'James Johnson', 'password123', 'https://example.com/avatar/james.jpg');
+-- Insertar datos en la tabla Users
+INSERT INTO Users (email, name, password, avatar, createdAt, updatedAt, isDeleted, rolId) VALUES
+    ('admin@example.com', 'Admin User', '123456', 'admin_avatar.png', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false, 1),
+    ('editor1@example.com', 'Editor User', '123456', 'editor_avatar1.png', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false, 2),
+    ('editor2@example.com', 'Editor Two', '123456', 'editor_avatar2.png', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false, 2),
+    ('reader1@example.com', 'Reader One', '123456', 'reader_avatar1.png', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false, 3),
+    ('reader2@example.com', 'Reader Two', '123456', 'reader_avatar2.png', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false, 3),
+    ('reader3@example.com', 'Reader Three', '123456', 'reader_avatar3.png', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false, 3);
 
--- Insertar datos en UserRoles
-INSERT INTO UserRoles (userId, roleId) VALUES
-    ((SELECT id FROM Users WHERE email = 'alice@example.com'), (SELECT id FROM Roles WHERE role = 'ADMIN')),
-    ((SELECT id FROM Users WHERE email = 'bob@example.com'), (SELECT id FROM Roles WHERE role = 'EDITOR')),
-    ((SELECT id FROM Users WHERE email = 'carol@example.com'), (SELECT id FROM Roles WHERE role = 'READER')),
-    ((SELECT id FROM Users WHERE email = 'dave@example.com'), (SELECT id FROM Roles WHERE role = 'EDITOR')),
-    ((SELECT id FROM Users WHERE email = 'eve@example.com'), (SELECT id FROM Roles WHERE role = 'READER')),
-    ((SELECT id FROM Users WHERE email = 'fred@example.com'), (SELECT id FROM Roles WHERE role = 'EDITOR')),
-    ((SELECT id FROM Users WHERE email = 'george@example.com'), (SELECT id FROM Roles WHERE role = 'EDITOR')),
-    ((SELECT id FROM Users WHERE email = 'harry@example.com'), (SELECT id FROM Roles WHERE role = 'READER')),
-    ((SELECT id FROM Users WHERE email = 'isabel@example.com'), (SELECT id FROM Roles WHERE role = 'READER')),
-    ((SELECT id FROM Users WHERE email = 'james@example.com'), (SELECT id FROM Roles WHERE role = 'READER'));
+-- Insertar datos en la tabla Posts
+INSERT INTO Posts (userId, title, content, description, image, views, likes, slug, createdAt, updatedAt, isDeleted) VALUES
+    ((SELECT id FROM Users WHERE email = 'editor1@example.com'), 'First Post', 'Content of the first post', 'Description of the first post', 'image1.png', 100, 10, 'first-post', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false),
+    ((SELECT id FROM Users WHERE email = 'editor2@example.com'), 'Second Post', 'Content of the second post', 'Description of the second post', 'image2.png', 150, 20, 'second-post', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false),
+    ((SELECT id FROM Users WHERE email = 'admin@example.com'), 'Admin Post', 'Content created by admin', 'Admin description', 'image_admin.png', 200, 30, 'admin-post', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
--- Insertar datos en Posts
-INSERT INTO Posts (userId, title, content, description, image, slug) VALUES
-    ((SELECT id FROM Users WHERE email = 'alice@example.com'), 'First Post', 'This is the content of the first post.', 'This is a description for the first post.', 'https://example.com/images/post1.jpg', 'first-post'),
-    ((SELECT id FROM Users WHERE email = 'bob@example.com'), 'Second Post', 'Content for the second post goes here.', 'Description for the second post.', 'https://example.com/images/post2.jpg', 'second-post'),
-    ((SELECT id FROM Users WHERE email = 'dave@example.com'), 'Fourth Post', 'Fourth post content goes here.', 'Fourth post description.', 'https://example.com/images/post4.jpg', 'fourth-post'),
-    ((SELECT id FROM Users WHERE email = 'fred@example.com'), 'Sixth Post', 'Sixth post content goes here.', 'Sixth post description.', 'https://example.com/images/post6.jpg', 'sixth-post'),
-    ((SELECT id FROM Users WHERE email = 'george@example.com'), 'Seventh Post', 'Seventh post content goes here.', 'Seventh post description.', 'https://example.com/images/post7.jpg', 'seventh-post');
+-- Insertar datos en la tabla Comments
+INSERT INTO Comments (userId, postId, content, createdAt, updatedAt, isDeleted) VALUES
+    ((SELECT id FROM Users WHERE email = 'reader1@example.com'), (SELECT id FROM Posts WHERE slug = 'first-post'), 'Great post!', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false),
+    ((SELECT id FROM Users WHERE email = 'reader1@example.com'), (SELECT id FROM Posts WHERE slug = 'second-post'), 'Thanks for sharing.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false),
+    ((SELECT id FROM Users WHERE email = 'reader2@example.com'), (SELECT id FROM Posts WHERE slug = 'first-post'), 'Very informative.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false),
+    ((SELECT id FROM Users WHERE email = 'reader3@example.com'), (SELECT id FROM Posts WHERE slug = 'first-post'), 'I like it.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false),
+    ((SELECT id FROM Users WHERE email = 'admin@example.com'), (SELECT id FROM Posts WHERE slug = 'admin-post'), 'This is an admin comment.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
--- Insertar datos en Comments
-INSERT INTO Comments (userId, postId, content) VALUES
-    ((SELECT id FROM Users WHERE email = 'carol@example.com'), (SELECT id FROM Posts WHERE slug = 'first-post'), 'Great post! Really enjoyed reading it.'),
-    ((SELECT id FROM Users WHERE email = 'alice@example.com'), (SELECT id FROM Posts WHERE slug = 'second-post'), 'Thank you for sharing this post.'),
-    ((SELECT id FROM Users WHERE email = 'bob@example.com'), (SELECT id FROM Posts WHERE slug = 'fourth-post'), 'I really enjoyed reading this post.'),
-    ((SELECT id FROM Users WHERE email = 'dave@example.com'), (SELECT id FROM Posts WHERE slug = 'sixth-post'), 'I really enjoyed reading this post.'),
-    ((SELECT id FROM Users WHERE email = 'eve@example.com'), (SELECT id FROM Posts WHERE slug = 'seventh-post'), 'I really enjoyed reading this post.'),
-    ((SELECT id FROM Users WHERE email = 'fred@example.com'), (SELECT id FROM Posts WHERE slug = 'seventh-post'), 'I really enjoyed reading this post.'),
-    ((SELECT id FROM Users WHERE email = 'george@example.com'), (SELECT id FROM Posts WHERE slug = 'seventh-post'), 'I really enjoyed reading this post.'),
-    ((SELECT id FROM Users WHERE email = 'harry@example.com'), (SELECT id FROM Posts WHERE slug = 'first-post'), 'I really enjoyed reading this post.'),
-    ((SELECT id FROM Users WHERE email = 'isabel@example.com'), (SELECT id FROM Posts WHERE slug = 'first-post'), 'I really enjoyed reading this post.'),
-    ((SELECT id FROM Users WHERE email = 'james@example.com'), (SELECT id FROM Posts WHERE slug = 'first-post'), 'I really enjoyed reading this post.');
 ```
