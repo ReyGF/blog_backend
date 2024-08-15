@@ -14,7 +14,7 @@ datasource db {
 }
 
 model Post {
-  id          Int       @id @default(autoincrement())
+  id          String    @id @default(uuid())
   userId      Int       @unique
   title       String
   content     String
@@ -30,7 +30,13 @@ model Post {
 }
 
 model Comment {
-  id     Int  @id @default(autoincrement())
-  postId Int  @unique
-  post   Post @relation(fields: [postId], references: [id])
+  id     Int    @id @default(autoincrement())
+  postId String @unique
+  post   Post   @relation(fields: [postId], references: [id])
+}
+
+model Role {
+  id          Int    @id @unique @default(autoincrement())
+  role        String @unique
+  description String
 }
