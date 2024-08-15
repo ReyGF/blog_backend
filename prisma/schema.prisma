@@ -52,6 +52,7 @@ model Posts {
   isDeleted   Boolean    @default(false)
   user        Users      @relation(fields: [userId], references: [id], onDelete: Cascade)
   comments    Comments[]
+  TFIDF       Decimal[]
 }
 
 model Comments {
