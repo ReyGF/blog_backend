@@ -5,38 +5,71 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [uuidOssp(map: "uuid-ossp")]
 }
 
-model Post {
-  id          String    @id @default(uuid())
-  userId      Int       @unique
-  title       String
+model Roles {
+  id          Int     @id @default(autoincrement())
+  role        String  @unique @db.VarChar(20)
+  description String?
+  users       Users[]
+}
+
+model Users {
+  id        String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email     String     @unique @db.VarChar(255)
+  name      String     @db.VarChar(60)
+  password  String     @db.VarChar(255)
+  avatar    String?    @db.VarChar(255)
+  createdAt DateTime   @default(now()) @db.Timestamptz
+  updatedAt DateTime   @default(now()) @db.Timestamptz
+  isDeleted Boolean    @default(false)
+  rolId     Int        @default(3)
+  rol       Roles      @relation(fields: [rolId], references: [id])
+  posts     Posts[]
+  comments  Comments[]
+}
+
+model Posts {
+  id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String     @db.Uuid
+  title       String     @db.VarChar(255)
   content     String
   description String?
-  image       String?
-  views       Int?
-  likes       Int?
-  slug        String?
-  createdAt   DateTime
-  updateAt    DateTime
-  isDeleted   Boolean   @default(false)
-  comments    Comment[]
+  image       String?    @db.VarChar(255)
+  views       Int        @default(0)
+  likes       Int        @default(0)
+  slug        String?    @unique @db.VarChar(255)
+  createdAt   DateTime   @default(now()) @db.Timestamptz
+  updatedAt   DateTime   @default(now()) @db.Timestamptz
+  isDeleted   Boolean    @default(false)
+  user        Users      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comments    Comments[]
 }
 
-model Comment {
-  id     Int    @id @default(autoincrement())
-  postId String @unique
-  post   Post   @relation(fields: [postId], references: [id])
+model Comments {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @db.Uuid
+  postId    String   @db.Uuid
+  content   String
+  createdAt DateTime @default(now()) @db.Timestamptz
+  updatedAt DateTime @default(now()) @db.Timestamptz
+  isDeleted Boolean  @default(false)
+  user      Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post      Posts    @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
 }
 
-model Role {
-  id          Int    @id @unique @default(autoincrement())
-  role        String @unique
-  description String
+model IDF {
+  id   String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  word String @unique
+  idf  Int
 }

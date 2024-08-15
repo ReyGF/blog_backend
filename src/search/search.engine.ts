@@ -12,6 +12,10 @@ export class SearchEngine{
 
         return result
     }
+    static TF(content: string): Map<string, number>
+    {
+        return new Map<string, number>()
+    }
     
     static load(books: Book[]): TF_IDF{
        
