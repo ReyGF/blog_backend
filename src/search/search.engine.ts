@@ -16,8 +16,8 @@ export class SearchEngine{
     static load(books: Book[]): TF_IDF{
        
         let TF = new Map<string, Map<Book,number>>() //words x document x times
-        let IDF = new Map<string, number>() // word x idf
-        let TFIDF = new Map<Book, number[]>()//  dcoumnet x tf_idf vector
+        let IDF = new Map<string, number>() //word x idf
+        let TFIDF = new Map<Book, number[]>() //dcoumnet x tf_idf vector
         
         for(let book of books){
             
@@ -116,5 +116,4 @@ export class SearchEngine{
     
         return dotProduct / (magnitude1 * magnitude2);
       }
-    
 }

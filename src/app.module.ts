@@ -3,14 +3,11 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PostsModule } from './posts/posts.module';
 import { CommentsModule } from './comments/comments.module';
-import { AuthController } from './login/auth/auth.controller';
-import { UsersController } from './login/users/users.controller';
-import { DashboardController } from './dashboard/dashboard.controller';
 import { SuggestionModule } from './suggestion/suggestion.module';
 
 @Module({
   imports: [PostsModule, CommentsModule, SuggestionModule],
-  controllers: [AppController, AuthController, UsersController, DashboardController],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
