@@ -1,87 +1,10 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
-
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
-
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Installation
-
-```bash
-$ npm install
-```
-
-## Running the app
-
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
-```
-
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
-
-
----
-
 # Base de datos
 
 ## Levantar base de datos PostgreSQL con docker
 
 1. **Dependencias**: Tener instalado docker y docker-compose.
 
-2. **Variables de entorno**: 
+2. **Variables de entorno**:
    - Crear un fichero `.env` donde se defina la variable `POSTGRES_PASSWORD`, que será la contraseña de la base de datos.
    - La variable `POSTGRES_PORT` es el puerto de la base de datos. Por defecto es `5432`.
    - La variable `ADMINER_PORT` es el puerto del administrador de base de datos. Por defecto es `8080`.
@@ -90,7 +13,7 @@ Nest is [MIT licensed](LICENSE).
 3. **Comando para levantar la base de datos**: `docker-compose up -d`
    - Ahora puedes conectarte a la base de datos desde tu propio administrador o usar el que he puesto en el docker-compose, `adminer`. Para entrar en él debes escribir `http://localhost:8080` (o el puerto que hayas especificado en el `.env` que por defecto es `8080`).
    - Cuando abras el enlace, para conectarte a la base de datos deberás llenar los datos de la siguiente manera:
-  
+
   |                        |            |
   | ---------------------- | ---------- |
   | Motor de base de datos | PostgreSQL |
@@ -100,7 +23,7 @@ Nest is [MIT licensed](LICENSE).
   | Base de datos          |            |
 
 4. **Poblar la base de datos**: Para crear y poblar la base de datos se puede copiar los `SQL` de [crear base de datos](#crear-base-de-datos) y [poblar la base de datos](#poblar-con-datos-fake-para-pruebas).
-   
+
 5. **Comando para detener la base de datos**: `docker-compose down -v`
 
 ## Entidades
@@ -180,10 +103,10 @@ CREATE TABLE Roles (
 );
 
 -- Insertar roles
-INSERT INTO Roles (role, description) VALUES 
-    ('ADMIN', 'Crear y editar usuarios, más los permisos de EDITOR'),
-    ('EDITOR', 'Crear y editar posts, más los permisos de READER'),
-    ('READER', 'Leer y comentar ');
+INSERT INTO "Roles" ("id", "role", "description") VALUES
+    (1,	'ADMIN',	'Crear y editar usuarios, más los permisos de EDITOR'),
+    (2,	'EDITOR',	'Crear y editar posts, más los permisos de READER'),
+    (3,	'READER',	'Leer y comentar ');
 
 -- Tabla Users
 CREATE TABLE Users (
@@ -260,4 +183,73 @@ INSERT INTO Comments (userId, postId, content, createdAt, updatedAt, isDeleted) 
     ((SELECT id FROM Users WHERE email = 'reader3@example.com'), (SELECT id FROM Posts WHERE slug = 'first-post'), 'I like it.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false),
     ((SELECT id FROM Users WHERE email = 'admin@example.com'), (SELECT id FROM Posts WHERE slug = 'admin-post'), 'This is an admin comment.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, false);
 
+```
+
+### Entidades con Prisma
+
+```prisma
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [uuid-ossp]
+}
+
+model Roles {
+  id          Int     @id @default(autoincrement())
+  role        String  @unique @db.VarChar(20)
+  description String?
+  users       Users[]
+}
+
+model Users {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email     String    @unique @db.VarChar(255)
+  name      String    @db.VarChar(60)
+  password  String    @db.VarChar(255)
+  avatar    String?   @db.VarChar(255)
+  createdAt DateTime  @default(now()) @db.Timestamptz
+  updatedAt DateTime  @default(now()) @db.Timestamptz
+  isDeleted Boolean   @default(false)
+  rolId     Int       @default(3)
+  rol       Roles     @relation(fields: [rolId], references: [id])
+  posts     Posts[]
+  comments  Comments[]
+}
+
+model Posts {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String    @db.Uuid
+  title       String    @db.VarChar(255)
+  content     String
+  description String?
+  image       String?   @db.VarChar(255)
+  views       Int       @default(0)
+  likes       Int       @default(0)
+  slug        String?   @unique @db.VarChar(255)
+  createdAt   DateTime  @default(now()) @db.Timestamptz
+  updatedAt   DateTime  @default(now()) @db.Timestamptz
+  isDeleted   Boolean   @default(false)
+  user        Users     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comments    Comments[]
+}
+
+model Comments {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @db.Uuid
+  postId    String   @db.Uuid
+  content   String
+  createdAt DateTime @default(now()) @db.Timestamptz
+  updatedAt DateTime @default(now()) @db.Timestamptz
+  isDeleted Boolean  @default(false)
+  user      Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post      Posts    @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+}
 ```

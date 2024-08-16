@@ -1,0 +1,68 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [uuidOssp(map: "uuid-ossp")]
+}
+
+model Roles {
+  id          Int     @id @default(autoincrement())
+  role        String  @unique @db.VarChar(20)
+  description String?
+  Users       Users[]
+}
+
+model Users {
+  id        String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email     String     @unique @db.VarChar(255)
+  name      String     @db.VarChar(60)
+  password  String     @db.VarChar(255)
+  avatar    String?    @db.VarChar(255)
+  createdAt DateTime   @default(now()) @db.Timestamptz
+  updatedAt DateTime   @default(now()) @db.Timestamptz
+  isDeleted Boolean    @default(false)
+  roleId    Int        @default(3)
+  role      Roles      @relation(fields: [roleId], references: [id])
+  posts     Posts[]
+  comments  Comments[]
+}
+
+model Posts {
+  id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String     @db.Uuid
+  title       String     @db.VarChar(255)
+  content     String
+  description String?
+  image       String?    @db.VarChar(255)
+  views       Int        @default(0)
+  likes       Int        @default(0)
+  slug        String?    @unique @db.VarChar(255)
+  createdAt   DateTime   @default(now()) @db.Timestamptz
+  updatedAt   DateTime   @default(now()) @db.Timestamptz
+  isDeleted   Boolean    @default(false)
+  user        Users      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comments    Comments[]
+}
+
+model Comments {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @db.Uuid
+  postId    String   @db.Uuid
+  content   String
+  createdAt DateTime @default(now()) @db.Timestamptz
+  updatedAt DateTime @default(now()) @db.Timestamptz
+  isDeleted Boolean  @default(false)
+  user      Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post      Posts    @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+}
