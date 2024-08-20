@@ -1,4 +1,4 @@
-/*import { Module } from "@nestjs/common"
+import { Module } from "@nestjs/common"
 import { DbService } from "./db.service"
 
 @Module({
@@ -6,4 +6,4 @@ import { DbService } from "./db.service"
     exports: [DbService]
 })
 
-export class DbModule{}*/
+export class DbModule{}

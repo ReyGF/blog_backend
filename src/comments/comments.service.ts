@@ -1,46 +1,50 @@
 import { Injectable } from '@nestjs/common';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
+import { DbService } from 'src/db/db.service';
 
 @Injectable()
 export class CommentsService {
+
+  constructor(private db: DbService) {}
+
   async create(createCommentDto: CreateCommentDto) {
-    return ''
-  /*  return this.db.cooments.create({
+    
+    return this.db.comments.create({
       data: createCommentDto
-    });*/
+    }); 
   }
 
   async findAll() {
-    return ''
-   // return this.db.cooments.findMany();
+ 
+   return this.db.comments.findMany();
   }
 
   async findOne(id: number) {
-    return ''
-   /* return this.db.findUnique({
+    
+    return this.db.comments.findUnique({
       where: {
-        id: Number(id)
+        id: String(id)
       }
-    });*/
+    });
   }
 
   async update(id: number, updateCommentDto: UpdateCommentDto) {
-    return ''
-   /* return this.db.post.update({
+  
+    return this.db.posts.update({
       where: {
-        id: Number(id)
+        id: String(id)
       },
       data: updateCommentDto
-    });*/
+    });
   }
 
   async remove(id: number) {
-    return ''
-   /* return this.db.post.delete({
+    
+    return this.db.posts.delete({
       where:{
-        id: Number(id)
+        id: String(id)
       }
-    })*/
+    })
   }
 }

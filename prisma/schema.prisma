@@ -77,7 +77,7 @@ model IDF {
 
 model TFIDF {
   id     String    @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  postId String    @unique
+  postId String    @unique @db.Uuid
   post   Posts     @relation(fields: [postId], references: [id], onDelete: Cascade)
   vector Decimal[]
 }

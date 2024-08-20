@@ -2,21 +2,21 @@ import { Injectable } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { SearchEngine } from 'src/search/search.engine';
-//import { DbService } from 'src/db/db.service';
+import { DbService } from 'src/db/db.service';
+import { CreateTFIDFDto } from './dto/create-tfidf.dto';
+import { SearchResult } from 'src/search/search.result';
 
 @Injectable()
 export class PostsService {
-  constructor(/*private db : DbService*/){}
+  constructor(private db : DbService){}
 
-  create(createPostDto: CreatePostDto) {
-    return ''
-
-   /* 
+  async create(createPostDto: CreatePostDto, createTFIDFDto: CreateTFIDFDto) {
+  
    let wordsTF: Map<string, number> = SearchEngine.TF(createPostDto.content)
 
    let score: number[] = []
    
-   let idf = this.db.idf.findMany()
+   let idf = await this.db.iDF.findMany()
   
     wordsTF.forEach((tf, word) => {
 
@@ -25,35 +25,36 @@ export class PostsService {
             score.push(tf * w.idf)
           }
       })
+    })
 
+    await this.db.tFIDF.create({
+      data: {
+        postId: createTFIDFDto.postId,
+        vector: score
+      }
+    })
 
-      
-    })*/
-
-   /* return db.post.create({
+    return await this.db.posts.create({
       data: createPostDto
-      score: number[]
-    });*/
+    });
   }
 
   async findAll() {
-    return ''
-   // return this.db.post.findMany()
+    return await this.db.posts.findMany()
   }
 
   async findOne(id: number) { 
-    return ''
-    /*return this.db.findUnique({
+    return await this.db.posts.findUnique({
       where: {
-        id: Number(id)
+        id: String(id)
       }
-    });*/
+    });
   }
   async search(query: string){
-    /*
+   
     let mapTfquery: Map<string, number> = SearchEngine.TF(query)
 
-    let idf = this.db.idf.findMany()
+    let idf= await this.db.iDF.findMany()
     
     let TfIdfquery: number[] = []
 
@@ -64,32 +65,45 @@ export class PostsService {
             TfIdfquery.push(tf * w.idf)
           }
       })
-
-    let tfIdf = this.db.tfidf.findMany()
-
-    let result = tfIdf.map( nums => {
-
-            return vectorialModel(nums, tfIdfquery)
     })
-    */ 
+
+    let tfIdf = await this.db.tFIDF.findMany()
+
+    let scores: Map<string, number> = new Map<string, number>()
+
+    tfIdf.forEach( nums => {
+
+      let numbers = nums.vector.map(n => Number(n))
+      
+      let score = SearchEngine.cosineSimilarity(numbers,TfIdfquery)
+
+      scores.set(nums.id,score)
+    })
+
+    let result: SearchResult[] = []
+    
+    scores.forEach((score, postId) => {
+      result.push(new SearchResult(postId,"",score))
+    })
+
+    return result.sort((a, b) => a.score + b.score)
+    
   }
 
   async update(id: number, updatePostDto: UpdatePostDto) {
-    return ''
-   /* return this.db.post.update({
+    return await this.db.posts.update({
       where: {
-        id: Number(id)
+        id: String(id)
       },
       data: updatePostDto
-    });*/
+    });
   }
 
   async remove(id: number) {
-    return ''
-   /* return this.db.post.delete({
+   return await this.db.posts.delete({
       where:{
-        id: Number(id)
+        id: String(id)
       }
-    });*/
+    });
   }
 }
