@@ -14,7 +14,22 @@ export class SearchEngine{
     }
     static TF(content: string): Map<string, number>
     {
-        return new Map<string, number>()
+        const text = content.split("")
+
+        let contentTf = new Map<string, number>()
+
+        for(let word of text){
+            let num = contentTf.get(word)
+
+            if(num === undefined){
+                contentTf.set(word, 1/content.length) 
+            }
+            else{
+                contentTf.set(word,( contentTf.get(word) || 0 ) + 1/text.length)
+            }
+        }
+
+        return contentTf
     }
     
     static load(books: Book[]): TF_IDF{
@@ -25,16 +40,18 @@ export class SearchEngine{
         
         for(let book of books){
             
-            const text = book.content.split(" ") // words
-            const textCount = text.length
-            
+            const text = book.content.split(" ") // words    
             
             for(let word of text){
                 
                 let map = TF.get(word)
                 
-                map === undefined ? TF.set(word,new Map<Book, number>().set(book, 1/textCount)) 
-                : map.set(book, (map.get(book) || 0) + 1/textCount )
+                if(map === undefined){
+                    TF.set(word,new Map<Book, number>().set(book, 1/text.length)) 
+                }
+                else{
+                    map.set(book, (map.get(book) || 0) + 1/text.length )
+                }
             }
         }
         

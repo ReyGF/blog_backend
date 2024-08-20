@@ -4,23 +4,43 @@ import { UpdateCommentDto } from './dto/update-comment.dto';
 
 @Injectable()
 export class CommentsService {
-  create(createCommentDto: CreateCommentDto) {
-    return 'This action adds a new comment';
+  async create(createCommentDto: CreateCommentDto) {
+    return ''
+  /*  return this.db.cooments.create({
+      data: createCommentDto
+    });*/
   }
 
-  findAll() {
-    return `This action returns all comments`;
+  async findAll() {
+    return ''
+   // return this.db.cooments.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} comment`;
+  async findOne(id: number) {
+    return ''
+   /* return this.db.findUnique({
+      where: {
+        id: Number(id)
+      }
+    });*/
   }
 
-  update(id: number, updateCommentDto: UpdateCommentDto) {
-    return `This action updates a #${id} comment`;
+  async update(id: number, updateCommentDto: UpdateCommentDto) {
+    return ''
+   /* return this.db.post.update({
+      where: {
+        id: Number(id)
+      },
+      data: updateCommentDto
+    });*/
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} comment`;
+  async remove(id: number) {
+    return ''
+   /* return this.db.post.delete({
+      where:{
+        id: Number(id)
+      }
+    })*/
   }
 }

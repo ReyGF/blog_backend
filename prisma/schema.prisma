@@ -52,6 +52,7 @@ model Posts {
   isDeleted   Boolean    @default(false)
   user        Users      @relation(fields: [userId], references: [id], onDelete: Cascade)
   comments    Comments[]
+  tfIdf       TFIDF[]
 }
 
 model Comments {
@@ -75,6 +76,8 @@ model IDF {
 }
 
 model TFIDF {
-  postId String    @id @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id     String    @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  postId String    @unique
+  post   Posts     @relation(fields: [postId], references: [id], onDelete: Cascade)
   vector Decimal[]
 }

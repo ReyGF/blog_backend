@@ -4,49 +4,92 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { SearchEngine } from 'src/search/search.engine';
 //import { DbService } from 'src/db/db.service';
 
-class Db{
-  post : any
-  idf: any
-  count: any
-
-  constructor(post: any, idf: any, count: any){
-    this.post = post
-    this.idf = idf
-    this.count = count
-  }
-}
-
 @Injectable()
 export class PostsService {
   constructor(/*private db : DbService*/){}
 
   create(createPostDto: CreatePostDto) {
+    return ''
 
-    let wordsTF: Map<string, number> = SearchEngine.TF(createPostDto.content)
-    let db = new Db("este es un post","esta es una tabla idf",3)
-    
-    wordsTF.forEach((tf, word) =>{
+   /* 
+   let wordsTF: Map<string, number> = SearchEngine.TF(createPostDto.content)
 
-      let idf = db.idf.get(word)
+   let score: number[] = []
+   
+   let idf = this.db.idf.findMany()
+  
+    wordsTF.forEach((tf, word) => {
+
+      idf.map(w => {
+          if(w.word === word){
+            score.push(tf * w.idf)
+          }
+      })
+
+
       
-      db.post.tfidf.add(tf * Math.log(db.count / idf))
+    })*/
+
+   /* return db.post.create({
+      data: createPostDto
+      score: number[]
+    });*/
+  }
+
+  async findAll() {
+    return ''
+   // return this.db.post.findMany()
+  }
+
+  async findOne(id: number) { 
+    return ''
+    /*return this.db.findUnique({
+      where: {
+        id: Number(id)
+      }
+    });*/
+  }
+  async search(query: string){
+    /*
+    let mapTfquery: Map<string, number> = SearchEngine.TF(query)
+
+    let idf = this.db.idf.findMany()
+    
+    let TfIdfquery: number[] = []
+
+     mapTfquery.forEach((tf, word) => {
+
+      idf.map(w => {
+          if(w.word === word){
+            TfIdfquery.push(tf * w.idf)
+          }
+      })
+
+    let tfIdf = this.db.tfidf.findMany()
+
+    let result = tfIdf.map( nums => {
+
+            return vectorialModel(nums, tfIdfquery)
     })
-    return 'This action adds a new post';
+    */ 
   }
 
-  findAll() {
-    return `This action returns all posts`;
+  async update(id: number, updatePostDto: UpdatePostDto) {
+    return ''
+   /* return this.db.post.update({
+      where: {
+        id: Number(id)
+      },
+      data: updatePostDto
+    });*/
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} post`;
-  }
-
-  update(id: number, updatePostDto: UpdatePostDto) {
-    return `This action updates a #${id} post`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} post`;
+  async remove(id: number) {
+    return ''
+   /* return this.db.post.delete({
+      where:{
+        id: Number(id)
+      }
+    });*/
   }
 }
